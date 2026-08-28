@@ -4,188 +4,56 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#f3ecdd" />
-    <meta name="description" content="Export Firefox and Chromium browser history locally, with counts, date bounds, and hashes you can verify." />
-    <title>History Export Sentinel — export it, then prove it</title>
+    <meta name="description" content="Export Firefox and Chromium history to JSON or CSV, then verify its record count, date range, and file hashes." />
+    <title>History Export Sentinel — verify browser history exports</title>
+    <link rel="canonical" href="https://browser-history-export-sentinel.sociobot.in/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="History Export Sentinel — verify browser history exports" />
+    <meta property="og:description" content="Export Firefox and Chromium history, then verify the files before changing a computer or account." />
+    <meta property="og:image" content="https://browser-history-export-sentinel.sociobot.in/og-history-sentinel.webp" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="History Export Sentinel — verify browser history exports" />
+    <meta name="twitter:description" content="Export Firefox and Chromium history, then verify the files before changing a computer or account." />
+    <meta name="twitter:image" content="https://browser-history-export-sentinel.sociobot.in/og-history-sentinel.webp" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <script type="module" src="/main.ts"></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to main content</a>
-    <div class="offline-banner" id="offline-banner" role="status" hidden>
-      Offline mode — the guide and recorded demo still work. Sentinel itself never needs a network.
-    </div>
+    <div class="offline-banner" id="offline-banner" role="status" hidden>Offline mode. The guide and sample-data demo remain available.</div>
+    <div class="demo-banner" id="demo-banner" role="status" hidden><strong>Demo — sample data, nothing is saved to your browser history.</strong><span><button type="button" data-reset-demo>Reset demo</button><a href="/#install" data-start-real>Start for real</a></span></div>
     <header class="site-header">
-      <a class="wordmark" href="/" aria-label="History Export Sentinel home">
-        <span aria-hidden="true">H//S</span>
-        <span>History Export<br />Sentinel</span>
-      </a>
-      <nav aria-label="Primary navigation">
-        <a href="#how">How it works</a>
-        <a href="#demo">Demo</a>
-        <a class="nav-install" href="#install">Install <span aria-hidden="true">↓</span></a>
-      </nav>
+      <a class="wordmark" href="/" aria-label="History Export Sentinel home"><span aria-hidden="true">H//S</span><span>History Export<br />Sentinel</span></a>
+      <nav aria-label="Primary navigation"><a href="/">Home</a><a href="/demo/">Demo</a><a href="/privacy/">Privacy</a><a class="nav-install" href="/#install">Install <span aria-hidden="true">↓</span></a></nav>
     </header>
-
     <main id="main">
       <section class="hero" aria-labelledby="hero-title">
         <div class="hero-copy">
           <p class="eyebrow"><span>Local CLI</span> Firefox + Chromium</p>
-          <h1 id="hero-title">Export history.<br /><mark>Prove it.</mark></h1>
-          <p class="lede">A cross-platform, copy-first history exporter that fails loudly when the result is empty—and gives you the hashes, counts, and date range to check it later.</p>
-          <div class="hero-actions">
-            <a class="button button-primary" href="#install">Install Sentinel</a>
-            <a class="text-link" href="#demo">Inspect the recorded run <span aria-hidden="true">→</span></a>
-          </div>
-          <ul class="proof-strip" aria-label="Product guarantees">
-            <li><strong>0</strong><span>network calls</span></li>
-            <li><strong>2</strong><span>browser families</span></li>
-            <li><strong>SHA-256</strong><span>on every artifact</span></li>
-          </ul>
+          <h1 id="hero-title">Export and verify <mark>browser history</mark></h1>
+          <p class="lede">For people archiving Firefox or Chromium history before changing a computer or account.</p>
+          <div class="hero-actions"><a class="button button-primary" href="/demo/">Try it with sample data</a><span class="action-note">See a finished export and its verification report.</span></div>
+          <ul class="proof-strip" aria-label="Product facts"><li><strong>3 systems</strong><span>Windows, macOS, Linux</span></li><li><strong>Local</strong><span>History stays on your computer</span></li><li><strong>Free</strong><span>MIT License</span></li></ul>
         </div>
-        <figure class="hero-figure">
-          <span class="figure-label" aria-hidden="true">Evidence desk / 001</span>
-          <img src="/evidence-desk.webp" width="1200" height="800" alt="A dark browser database cartridge passes through a verifier gate and becomes two checked paper export reports." fetchpriority="high" />
-          <figcaption>Database copied first. Export read second. Evidence checked last.</figcaption>
-        </figure>
+        <figure class="hero-figure"><span class="figure-label" aria-hidden="true">Local export / verification</span><img src="/evidence-desk-e6b1edca.webp" width="1200" height="630" alt="A browser database cartridge passes through a verifier and becomes two checked export reports." fetchpriority="high" /><figcaption>Copy the database. Export its records. Verify the exported files.</figcaption></figure>
       </section>
-
-      <aside class="privacy-rail" aria-label="Privacy summary">
-        <p><strong>History stays on this machine.</strong> No account. No cloud. No telemetry.</p>
-        <a href="/privacy/">Read the privacy note <span aria-hidden="true">→</span></a>
-      </aside>
-
+      <aside class="privacy-rail" aria-label="Privacy summary"><p><strong>Your history stays on your computer.</strong> The CLI has no account or telemetry.</p><a href="/privacy/">Read the privacy policy <span aria-hidden="true">→</span></a></aside>
       <section class="process section" id="how" aria-labelledby="process-title">
-        <div class="section-heading">
-          <p class="eyebrow">Copy / normalize / attest</p>
-          <h2 id="process-title">A file existing is not proof.</h2>
-          <p>Sentinel treats verification as part of the export—not a chore you remember after wiping the old machine.</p>
-        </div>
-        <ol class="process-grid">
-          <li>
-            <span class="step-number" aria-hidden="true">01</span>
-            <h3>Find profiles</h3>
-            <p>Detect Firefox, Chrome, Chromium, Edge, Brave, and Vivaldi profiles in their native Windows, macOS, and Linux locations.</p>
-            <code>sentinel scan</code>
-          </li>
-          <li>
-            <span class="step-number" aria-hidden="true">02</span>
-            <h3>Copy before reading</h3>
-            <p>Copy the history database and SQLite sidecars into a private temporary workspace. The live profile is never opened by SQLite.</p>
-            <code>History → /tmp/sentinel…</code>
-          </li>
-          <li>
-            <span class="step-number" aria-hidden="true">03</span>
-            <h3>Verify the evidence</h3>
-            <p>Recompute artifact hashes, record counts, and visit bounds. A mismatch exits non-zero with the exact file to inspect.</p>
-            <code>sentinel verify ./archive</code>
-          </li>
-        </ol>
+        <div class="section-heading"><p class="eyebrow">Copy, export, and verify</p><h2 id="process-title">How Sentinel verifies an export</h2><p>Keep the verification report with your export. Run the check again after moving the folder.</p></div>
+        <ol class="process-grid"><li><span class="step-number" aria-hidden="true">01</span><h3>Find profiles</h3><p>Find Firefox and Chromium-family profiles in standard Windows, macOS, and Linux locations.</p><code>sentinel scan</code></li><li><span class="step-number" aria-hidden="true">02</span><h3>Copy before reading</h3><p>Copy the history database and its SQLite side files to a private temporary folder.</p><code>History → temporary copy</code></li><li><span class="step-number" aria-hidden="true">03</span><h3>Verify exported files</h3><p>Check each file hash, the record count, and the date range against the report.</p><code>sentinel verify ./history-archive</code></li></ol>
       </section>
-
-      <section class="demo-section section" id="demo" aria-labelledby="demo-title">
-        <div class="section-heading split-heading">
-          <div>
-            <p class="eyebrow">Recorded fixture / no local access</p>
-            <h2 id="demo-title">See every ending.</h2>
-          </div>
-          <p>This browser demo uses synthetic URLs. The real CLI works offline against your copied database and never sends its contents here.</p>
-        </div>
-
-        <div class="demo-workbench">
-          <div class="state-tabs" role="tablist" aria-label="Choose recorded CLI result">
-            <button id="tab-verified" role="tab" aria-selected="true" aria-controls="demo-panel" tabindex="0" data-state="verified"><span aria-hidden="true">✓</span> Verified export</button>
-            <button id="tab-empty" role="tab" aria-selected="false" aria-controls="demo-panel" tabindex="-1" data-state="empty"><span aria-hidden="true">∅</span> Empty history</button>
-            <button id="tab-locked" role="tab" aria-selected="false" aria-controls="demo-panel" tabindex="-1" data-state="locked"><span aria-hidden="true">!</span> Locked profile</button>
-          </div>
-          <div class="terminal" id="demo-panel" role="tabpanel" aria-labelledby="tab-verified" tabindex="0">
-            <div class="terminal-bar" aria-hidden="true"><span></span><span></span><span></span><b>sentinel / recorded run</b></div>
-            <pre id="terminal-output"><code>$ sentinel export --profile ./fixture/Default --output ./archive
-
-COPY       History + History-wal → private snapshot
-READ       chromium schema v131
-NORMALIZE  12,841 visits → JSON + CSV
-HASH       history.json  7a920e…e914
-HASH       history.csv   f839cb…8a20
-
-✓ EXPORT COMPLETE
-  Records   12,841
-  Range     2017-04-08 → 2026-08-27
-  Report    ./archive/chromium-default/report.json
-
-$ sentinel verify ./archive
-✓ VERIFIED — hashes, count, and date bounds match</code></pre>
-            <div class="terminal-result result-verified" id="terminal-result" aria-live="polite">
-              <span id="result-label">Exit 0 / verified</span>
-              <span id="result-action">Safe to copy the archive</span>
-            </div>
-          </div>
-        </div>
-        <noscript><p class="noscript-note">JavaScript is off. The verified fixture is shown; run the CLI to inspect empty and locked-profile errors.</p></noscript>
+      <section class="demo-section section" id="sample" aria-labelledby="demo-title">
+        <div class="section-heading split-heading"><div><p class="eyebrow">Sample-data demo</p><h2 id="demo-title">See successful and failed exports</h2></div><p>The demo uses reserved sample domains. It never reads an installed browser profile.</p></div>
+        <div class="demo-workbench" data-demo-workbench><div class="state-tabs" role="tablist" aria-label="Choose sample CLI result"><button id="tab-verified" role="tab" aria-selected="true" aria-controls="demo-panel" tabindex="0" data-state="verified"><span aria-hidden="true">✓</span> Verified export</button><button id="tab-empty" role="tab" aria-selected="false" aria-controls="demo-panel" tabindex="-1" data-state="empty"><span aria-hidden="true">∅</span> Empty history</button><button id="tab-locked" role="tab" aria-selected="false" aria-controls="demo-panel" tabindex="-1" data-state="locked"><span aria-hidden="true">!</span> Blocked profile</button></div><div class="terminal" id="demo-panel" role="tabpanel" aria-labelledby="tab-verified" tabindex="0"><div class="terminal-bar" aria-hidden="true"><span></span><span></span><span></span><b>sentinel demo / bundled sample</b></div><pre id="terminal-output"><code></code></pre><div class="terminal-result result-verified" id="terminal-result" aria-live="polite"><span id="result-label"></span><span id="result-action"></span></div></div></div>
       </section>
-
-      <section class="report-section section" aria-labelledby="report-title">
-        <div class="section-heading">
-          <p class="eyebrow">report.json / schema v1</p>
-          <h2 id="report-title">Keep the receipt with the archive.</h2>
-        </div>
-        <div class="report-sheet">
-          <div class="report-stamp"><span aria-hidden="true">✓</span> Complete</div>
-          <dl>
-            <div><dt>Browser</dt><dd>chromium</dd></div>
-            <div><dt>Profile</dt><dd>Default</dd></div>
-            <div><dt>Records</dt><dd>12,841</dd></div>
-            <div><dt>Earliest</dt><dd>2017-04-08T09:14:52Z</dd></div>
-            <div><dt>Latest</dt><dd>2026-08-27T21:05:10Z</dd></div>
-            <div class="hash-row"><dt>history.json</dt><dd>7a920e54b1e1…e914</dd></div>
-            <div class="hash-row"><dt>history.csv</dt><dd>f839cb7fd89e…8a20</dd></div>
-          </dl>
-          <p>The report stores no absolute profile path. Share the archive only if you mean to share the history inside it.</p>
-        </div>
-      </section>
-
-      <section class="install-section section" id="install" aria-labelledby="install-title">
-        <div class="install-intro">
-          <p class="eyebrow">Free / MIT / v0.1.0</p>
-          <h2 id="install-title">One binary. No account.</h2>
-          <p>Build from source today. Signed release binaries can be added by the factory without changing the CLI or privacy model.</p>
-          <a class="text-link" href="https://github.com/B-Divyesh/sf-browser-history-export-sentinel">Review the source <span aria-hidden="true">↗</span><span class="sr-only"> (opens GitHub)</span></a>
-        </div>
-        <div class="command-stack">
-          <div class="command-block">
-            <span>Build and install</span>
-            <code id="install-command">cargo install --git https://github.com/B-Divyesh/sf-browser-history-export-sentinel history-export-sentinel</code>
-            <button class="copy-button" type="button" data-copy="install-command">Copy<span class="sr-only"> install command</span></button>
-          </div>
-          <div class="command-block command-acid">
-            <span>Export all detected profiles</span>
-            <code id="export-command">sentinel export --output ./history-archive --format both</code>
-            <button class="copy-button" type="button" data-copy="export-command">Copy<span class="sr-only"> export command</span></button>
-          </div>
-          <p class="copy-status" id="copy-status" aria-live="polite"></p>
-        </div>
-      </section>
-
-      <section class="limits-section section" aria-labelledby="limits-title">
-        <div>
-          <p class="eyebrow">Honest boundaries</p>
-          <h2 id="limits-title">What Sentinel does not do.</h2>
-        </div>
-        <ul>
-          <li><span aria-hidden="true">×</span><p><strong>No page archiving.</strong> It exports history records, not copies of visited websites.</p></li>
-          <li><span aria-hidden="true">×</span><p><strong>No encryption bypass.</strong> Passwords, cookies, and encrypted browser data remain out of scope.</p></li>
-          <li><span aria-hidden="true">×</span><p><strong>No silent recovery.</strong> Permission, schema, and changing-file errors stop the export with an actionable exit code.</p></li>
-        </ul>
-      </section>
+      <section class="report-section section" aria-labelledby="report-title"><div class="section-heading"><p class="eyebrow">report.json / format 1</p><h2 id="report-title">What the verification report records</h2></div><div class="report-sheet"><div class="report-stamp"><span aria-hidden="true">✓</span> Verified</div><dl><div><dt>Browsers</dt><dd>firefox + chromium</dd></div><div><dt>Profiles</dt><dd>2</dd></div><div><dt>Records</dt><dd>6</dd></div><div><dt>Earliest</dt><dd>2026-01-01T00:00:00Z</dd></div><div><dt>Latest</dt><dd>2026-01-03T00:00:00Z</dd></div><div class="hash-row"><dt>history.json</dt><dd>SHA-256 recorded</dd></div><div class="hash-row"><dt>history.csv</dt><dd>SHA-256 recorded</dd></div></dl><p>The report names the profile and database file. It does not store the source profile’s full path.</p></div></section>
+      <section class="install-section section" id="install" aria-labelledby="install-title"><div class="install-intro"><p class="eyebrow">Free / MIT / version 0.1.0</p><h2 id="install-title">Install Sentinel from source</h2><p>Signed binaries are not available yet. Build the single CLI with a current Rust toolchain.</p><a class="text-link" href="https://github.com/B-Divyesh/sf-browser-history-export-sentinel">Review the source <span aria-hidden="true">↗</span><span class="sr-only"> (opens GitHub)</span></a></div><div class="command-stack"><div class="command-block"><span>Build and install</span><code id="install-command">cargo install --git https://github.com/B-Divyesh/sf-browser-history-export-sentinel history-export-sentinel</code><button class="copy-button" type="button" data-copy="install-command">Copy<span class="sr-only"> install command</span></button></div><div class="command-block command-acid"><span>Run the same sample locally</span><code id="demo-command">sentinel demo</code><button class="copy-button" type="button" data-copy="demo-command">Copy<span class="sr-only"> demo command</span></button></div><p class="copy-status" id="copy-status" aria-live="polite"></p></div></section>
+      <section class="limits-section section" aria-labelledby="limits-title"><div><p class="eyebrow">Clear boundaries</p><h2 id="limits-title">What Sentinel does not do</h2></div><ul><li><span aria-hidden="true">×</span><p><strong>It does not archive web pages.</strong> It exports history records only.</p></li><li><span aria-hidden="true">×</span><p><strong>It does not read passwords or cookies.</strong> Encrypted browser data remains out of scope.</p></li><li><span aria-hidden="true">×</span><p><strong>It does not hide errors.</strong> Permission problems, unsupported database formats, and changing files stop with a specific code and next step.</p></li></ul></section>
     </main>
-
-    <footer>
-      <div class="wordmark footer-mark"><span aria-hidden="true">H//S</span><span>History Export<br />Sentinel</span></div>
-      <p>Portability without guesswork.<br />Built by the Param Factory.</p>
-      <nav aria-label="Legal and project links">
-        <a href="/privacy/">Privacy</a>
-        <a href="/terms/">Terms</a>
-        <a href="https://github.com/B-Divyesh/sf-browser-history-export-sentinel">Source</a>
-      </nav>
-    </footer>
+    <footer><a class="wordmark footer-mark" href="/" aria-label="History Export Sentinel home"><span aria-hidden="true">H//S</span><span>History Export<br />Sentinel</span></a><p>Exports Firefox and Chromium history to JSON or CSV.<br />Built by Param Factory · build 0.1.0-polish.1</p><nav aria-label="Legal and project links"><a href="/privacy/">Privacy</a><a href="/terms/">Terms</a><a href="https://github.com/B-Divyesh/sf-browser-history-export-sentinel">Source<span class="sr-only"> (opens GitHub)</span></a></nav></footer>
+    <div class="route-announcer sr-only" aria-live="polite" aria-atomic="true"></div>
   </body>
 </html>

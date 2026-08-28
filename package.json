@@ -8,8 +8,9 @@
     "build": "npm run build:site",
     "build:site": "vite build --config site/vite.config.ts && node scripts/build-service-worker.mjs",
     "preview": "vite preview --config site/vite.config.ts --host 127.0.0.1",
-    "test": "npm run test:cli && npm run build:site && npm run test:site",
+    "test": "npm run test:cli && npm run build:site && npm run test:claims && npm run test:site",
     "test:cli": "cargo test --workspace && cargo clippy --workspace --all-targets -- -D warnings",
+    "test:claims": "cargo build --manifest-path cli/Cargo.toml && node scripts/claim-tests.mjs",
     "test:site": "playwright test",
     "check": "tsc --noEmit -p site/tsconfig.json"
   },

@@ -6,29 +6,40 @@
     <meta name="theme-color" content="#f3ecdd" />
     <meta name="description" content="Privacy policy for History Export Sentinel." />
     <title>Privacy — History Export Sentinel</title>
+    <link rel="canonical" href="https://browser-history-export-sentinel.sociobot.in/privacy/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Privacy — History Export Sentinel" />
+    <meta property="og:description" content="How History Export Sentinel handles browser history and site data." />
+    <meta property="og:image" content="https://browser-history-export-sentinel.sociobot.in/og-history-sentinel.webp" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Privacy — History Export Sentinel" />
+    <meta name="twitter:description" content="How History Export Sentinel handles browser history and site data." />
+    <meta name="twitter:image" content="https://browser-history-export-sentinel.sociobot.in/og-history-sentinel.webp" />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="../style.css" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <script type="module" src="/main.ts"></script>
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to main content</a>
     <header class="site-header">
       <a class="wordmark" href="/" aria-label="History Export Sentinel home"><span aria-hidden="true">H//S</span><span>History Export<br />Sentinel</span></a>
-      <nav aria-label="Primary navigation"><a href="/">Home</a><a class="nav-install" href="/#install">Install <span aria-hidden="true">↓</span></a></nav>
+      <nav aria-label="Primary navigation"><a href="/">Home</a><a href="/demo/">Demo</a><a href="/privacy/" aria-current="page">Privacy</a><a class="nav-install" href="/#install">Install <span aria-hidden="true">↓</span></a></nav>
     </header>
     <main class="legal-main" id="main">
       <p class="eyebrow">Plain-language policy</p>
       <h1>Privacy</h1>
       <p class="effective">Effective 28 August 2026</p>
-      <p>History Export Sentinel is designed so your browser history does not need to leave your computer. The command-line tool has no network client, account system, telemetry, advertising, or analytics.</p>
+      <p>Sentinel processes browser history on your computer. The CLI has no network client, account system, telemetry, advertising, or analytics.</p>
       <h2>What the CLI reads</h2>
-      <p>When you run an export, Sentinel copies the selected browser history SQLite database and its present sidecars to a temporary local directory. It reads the copy to export URLs, page titles, visit timestamps, and visit counts. The temporary copy is deleted when the command finishes.</p>
+      <p>Sentinel copies the selected history database and present SQLite side files to a private temporary folder. It reads URLs, titles, visit times, and visit counts from that copy. The temporary copy is deleted when the command finishes.</p>
       <h2>What it writes</h2>
-      <p>Sentinel writes JSON and/or CSV history records and a verification report only to the output directory you choose. The report uses a profile label and database filename, not the absolute source path. These files are sensitive; protect or delete them as you would the original history.</p>
+      <p>Sentinel writes JSON, CSV, and a verification report to your chosen output folder. The report omits the source profile’s full path. These files are sensitive. Protect or delete them as you would the original history.</p>
       <h2>This website</h2>
-      <p>This static documentation site sets no cookies and uses no analytics, tracking pixels, third-party fonts, or third-party scripts. A service worker caches the public site files on your device for offline reading. Clear the site data in your browser to remove that cache.</p>
+      <p>This site sets no cookies. It uses no analytics, tracking pixels, third-party fonts, or third-party scripts. A service worker caches public pages for offline reading. The demo stores only its selected state under a <code>demo:</code> key. Reset demo removes it.</p>
       <h2>Contact and changes</h2>
-      <p>Questions and proposed changes can be filed in the public project repository. Material policy changes will be dated on this page. Because the software is local and anonymous, we cannot identify or retrieve your exports.</p>
+      <p>File questions in the <a href="https://github.com/B-Divyesh/sf-browser-history-export-sentinel">public project repository<span class="sr-only"> (opens GitHub)</span></a>. The project has no account service that can retrieve your exports.</p>
     </main>
-    <footer><div class="wordmark footer-mark"><span aria-hidden="true">H//S</span><span>History Export<br />Sentinel</span></div><p>Portability without guesswork.</p><nav aria-label="Legal links"><a href="/privacy/" aria-current="page">Privacy</a><a href="/terms/">Terms</a><a href="/">Home</a></nav></footer>
+    <footer><a class="wordmark footer-mark" href="/" aria-label="History Export Sentinel home"><span aria-hidden="true">H//S</span><span>History Export<br />Sentinel</span></a><p>Exports Firefox and Chromium history to JSON or CSV.<br />Built by Param Factory · build 0.1.0-polish.1</p><nav aria-label="Legal and project links"><a href="/privacy/" aria-current="page">Privacy</a><a href="/terms/">Terms</a><a href="https://github.com/B-Divyesh/sf-browser-history-export-sentinel">Source<span class="sr-only"> (opens GitHub)</span></a></nav></footer>
+    <div class="route-announcer sr-only" aria-live="polite" aria-atomic="true"></div>
   </body>
 </html>
