@@ -1,0 +1,12 @@
+{
+  "firefox": [
+    {"url":"https://archive.example/research/browser-portability","title":"Browser portability checklist","timestamp":1767225600000000},
+    {"url":"https://docs.example/guides/profile-backups","title":"Back up a browser profile","timestamp":1767312000000000},
+    {"url":"https://library.example/catalog/digital-preservation","title":"Digital preservation field notes","timestamp":1767398400000000}
+  ],
+  "chromium": [
+    {"url":"https://move.example/checklist/new-computer","title":"New computer move checklist","timestamp":13411699200000000},
+    {"url":"https://security.example/advice/protect-exported-data","title":"Protect exported personal data","timestamp":13411785600000000},
+    {"url":"https://standards.example/formats/csv-json","title":"CSV and JSON archive formats","timestamp":13411872000000000}
+  ]
+}

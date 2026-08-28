@@ -1,6 +1,6 @@
 use chrono::{DateTime, SecondsFormat, TimeZone, Utc};
 use clap::{Parser, Subcommand, ValueEnum};
-use rusqlite::{Connection, OpenFlags};
+use rusqlite::{Connection, OpenFlags, params};
 use serde::{Deserialize, Serialize};
 use sha2::{Digest, Sha256};
 use std::collections::BTreeSet;
@@ -33,6 +33,12 @@ struct Cli {
 
 #[derive(Subcommand, Debug)]
 enum Command {
+    /// Run a complete export and verification with bundled sample data.
+    Demo {
+        /// New directory for the sample export. Defaults to a unique temporary path.
+        #[arg(short, long)]
+        output: Option<PathBuf>,
+    },
     /// Find supported browser profiles without opening their databases.
     Scan {
         /// Treat this directory as the user home (useful for mounted backups).
@@ -168,6 +174,29 @@ struct VerifyResult {
     record_count: usize,
 }
 
+#[derive(Debug, Serialize)]
+struct DemoResult {
+    status: &'static str,
+    output: PathBuf,
+    profile_count: usize,
+    record_count: usize,
+    reports_checked: usize,
+    artifacts_checked: usize,
+}
+
+#[derive(Debug, Deserialize)]
+struct SampleData {
+    firefox: Vec<SampleVisit>,
+    chromium: Vec<SampleVisit>,
+}
+
+#[derive(Debug, Deserialize)]
+struct SampleVisit {
+    url: String,
+    title: String,
+    timestamp: i64,
+}
+
 #[derive(Debug)]
 struct AppError {
     kind: ErrorKind,
@@ -230,9 +259,10 @@ fn main() -> ExitCode {
 
 fn run(cli: Cli) -> Result<(), AppError> {
     match cli.command {
+        Command::Demo { output } => run_demo(output, cli.json),
         Command::Scan { home } => {
             let home = resolve_home(home)?;
-            let profiles = discover_profiles(&home, current_platform());
+            let profiles = discover_profiles(&home, current_platform())?;
             let result = ScanResult {
                 status: if profiles.is_empty() { "empty" } else { "ok" },
                 profile_count: profiles.len(),
@@ -269,7 +299,7 @@ fn run(cli: Cli) -> Result<(), AppError> {
                 vec![profile_from_path(&path)?]
             } else {
                 let home = resolve_home(home)?;
-                discover_profiles(&home, current_platform())
+                discover_profiles(&home, current_platform())?
             };
             if profiles.is_empty() {
                 return Err(AppError::new(
@@ -305,6 +335,168 @@ fn run(cli: Cli) -> Result<(), AppError> {
     }
 }
 
+fn run_demo(output: Option<PathBuf>, json: bool) -> Result<(), AppError> {
+    let nonce = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_default()
+        .as_nanos();
+    let sample_root =
+        env::temp_dir().join(format!("sentinel-sample-{}-{nonce}", std::process::id()));
+    let output = output.unwrap_or_else(|| {
+        env::temp_dir().join(format!(
+            "sentinel-demo-export-{}-{nonce}",
+            std::process::id()
+        ))
+    });
+    let sample = SampleWorkspace::create(&sample_root)?;
+    let profiles = sample.profiles()?;
+    let exported = export_profiles(&profiles, &output, ExportFormat::Both)?;
+    let verified = verify_exports(&output)?;
+    let result = DemoResult {
+        status: "verified",
+        output: exported.output,
+        profile_count: exported.profile_count,
+        record_count: exported.record_count,
+        reports_checked: verified.reports_checked,
+        artifacts_checked: verified.artifacts_checked,
+    };
+    if json {
+        print_json(&result)?;
+    } else {
+        println!("DEMO EXPORT VERIFIED");
+        println!("Profiles: {} (Firefox and Chromium)", result.profile_count);
+        println!("Records:  {}", result.record_count);
+        println!("Files:    {}", result.artifacts_checked);
+        println!("Output:   {}", result.output.display());
+        println!("Sample data was isolated; no installed browser profile was read.");
+    }
+    Ok(())
+}
+
+struct SampleWorkspace {
+    root: PathBuf,
+}
+
+impl SampleWorkspace {
+    fn create(root: &Path) -> Result<Self, AppError> {
+        fs::create_dir(root).map_err(general_io("create sample workspace"))?;
+        set_private_directory(root)?;
+        let data: SampleData = serde_json::from_str(include_str!(
+            "../examples/sample-history.json"
+        ))
+        .map_err(|error| {
+            AppError::new(
+                ErrorKind::Schema,
+                format!("bundled sample data is invalid: {error}"),
+            )
+        })?;
+
+        let firefox = root.join("Firefox/Archive research.default");
+        fs::create_dir_all(&firefox).map_err(general_io("create Firefox sample"))?;
+        let firefox_db = Connection::open(firefox.join("places.sqlite")).map_err(|error| {
+            AppError::new(
+                ErrorKind::Schema,
+                format!("cannot create Firefox sample: {error}"),
+            )
+        })?;
+        firefox_db.execute_batch(
+            "CREATE TABLE moz_places (id INTEGER PRIMARY KEY, url TEXT NOT NULL, title TEXT, visit_count INTEGER);
+             CREATE TABLE moz_historyvisits (id INTEGER PRIMARY KEY, place_id INTEGER NOT NULL, visit_date INTEGER);",
+        ).map_err(|error| AppError::new(ErrorKind::Schema, format!("cannot prepare Firefox sample: {error}")))?;
+        for (index, visit) in data.firefox.iter().enumerate() {
+            let id = index as i64 + 1;
+            firefox_db
+                .execute(
+                    "INSERT INTO moz_places (id, url, title, visit_count) VALUES (?1, ?2, ?3, 1)",
+                    params![id, visit.url, visit.title],
+                )
+                .map_err(|error| {
+                    AppError::new(
+                        ErrorKind::Schema,
+                        format!("cannot write Firefox sample: {error}"),
+                    )
+                })?;
+            firefox_db
+                .execute(
+                    "INSERT INTO moz_historyvisits (id, place_id, visit_date) VALUES (?1, ?1, ?2)",
+                    params![id, visit.timestamp],
+                )
+                .map_err(|error| {
+                    AppError::new(
+                        ErrorKind::Schema,
+                        format!("cannot write Firefox sample visit: {error}"),
+                    )
+                })?;
+        }
+        drop(firefox_db);
+
+        let chromium = root.join("Chromium/Research profile");
+        fs::create_dir_all(&chromium).map_err(general_io("create Chromium sample"))?;
+        let chromium_db = Connection::open(chromium.join("History")).map_err(|error| {
+            AppError::new(
+                ErrorKind::Schema,
+                format!("cannot create Chromium sample: {error}"),
+            )
+        })?;
+        chromium_db.execute_batch(
+            "CREATE TABLE urls (id INTEGER PRIMARY KEY, url TEXT NOT NULL, title TEXT, visit_count INTEGER);
+             CREATE TABLE visits (id INTEGER PRIMARY KEY, url INTEGER NOT NULL, visit_time INTEGER);",
+        ).map_err(|error| AppError::new(ErrorKind::Schema, format!("cannot prepare Chromium sample: {error}")))?;
+        for (index, visit) in data.chromium.iter().enumerate() {
+            let id = index as i64 + 1;
+            chromium_db
+                .execute(
+                    "INSERT INTO urls (id, url, title, visit_count) VALUES (?1, ?2, ?3, 1)",
+                    params![id, visit.url, visit.title],
+                )
+                .map_err(|error| {
+                    AppError::new(
+                        ErrorKind::Schema,
+                        format!("cannot write Chromium sample: {error}"),
+                    )
+                })?;
+            chromium_db
+                .execute(
+                    "INSERT INTO visits (id, url, visit_time) VALUES (?1, ?1, ?2)",
+                    params![id, visit.timestamp],
+                )
+                .map_err(|error| {
+                    AppError::new(
+                        ErrorKind::Schema,
+                        format!("cannot write Chromium sample visit: {error}"),
+                    )
+                })?;
+        }
+        drop(chromium_db);
+        Ok(Self {
+            root: root.to_path_buf(),
+        })
+    }
+
+    fn profiles(&self) -> Result<Vec<Profile>, AppError> {
+        Ok(vec![
+            profile_from_path(&self.root.join("Firefox/Archive research.default"))?,
+            profile_from_path(&self.root.join("Chromium/Research profile"))?,
+        ])
+    }
+}
+
+impl Drop for SampleWorkspace {
+    fn drop(&mut self) {
+        let _ = fs::remove_dir_all(&self.root);
+    }
+}
+
+fn set_private_directory(path: &Path) -> Result<(), AppError> {
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        fs::set_permissions(path, fs::Permissions::from_mode(0o700))
+            .map_err(general_io("set private workspace permissions"))?;
+    }
+    Ok(())
+}
+
 fn print_json(value: &impl Serialize) -> Result<(), AppError> {
     serde_json::to_writer_pretty(io::stdout().lock(), value).map_err(|e| {
         AppError::new(
@@ -337,7 +529,7 @@ fn current_platform() -> Platform {
     }
 }
 
-fn discover_profiles(home: &Path, platform: Platform) -> Vec<Profile> {
+fn discover_profiles(home: &Path, platform: Platform) -> Result<Vec<Profile>, AppError> {
     let (chromium_roots, firefox_roots): (Vec<(Browser, PathBuf)>, Vec<PathBuf>) = match platform {
         Platform::Linux => (
             vec![
@@ -394,12 +586,12 @@ fn discover_profiles(home: &Path, platform: Platform) -> Vec<Profile> {
 
     let mut profiles = BTreeSet::new();
     for (browser, root) in chromium_roots {
-        find_database_profiles(&root, "History", browser, 2, &mut profiles);
+        find_database_profiles(&root, "History", browser, 2, &mut profiles)?;
     }
     for root in firefox_roots {
-        find_database_profiles(&root, "places.sqlite", Browser::Firefox, 2, &mut profiles);
+        find_database_profiles(&root, "places.sqlite", Browser::Firefox, 2, &mut profiles)?;
     }
-    profiles.into_iter().collect()
+    Ok(profiles.into_iter().collect())
 }
 
 fn find_database_profiles(
@@ -408,9 +600,20 @@ fn find_database_profiles(
     browser: Browser,
     depth: usize,
     found: &mut BTreeSet<Profile>,
-) {
-    if !root.is_dir() {
-        return;
+) -> Result<(), AppError> {
+    match fs::metadata(root) {
+        Ok(metadata) if metadata.is_dir() => {}
+        Ok(_) => return Ok(()),
+        Err(error) if error.kind() == io::ErrorKind::NotFound => return Ok(()),
+        Err(error) => {
+            return Err(AppError::new(
+                ErrorKind::Access,
+                format!(
+                    "cannot inspect browser profile directory {}: {error}; fix its OS permissions, then retry",
+                    root.display()
+                ),
+            ));
+        }
     }
     let direct = root.join(filename);
     if direct.is_file() {
@@ -422,17 +625,33 @@ fn find_database_profiles(
         });
     }
     if depth == 0 {
-        return;
+        return Ok(());
     }
-    let Ok(entries) = fs::read_dir(root) else {
-        return;
-    };
-    for entry in entries.flatten() {
+    let entries = fs::read_dir(root).map_err(|error| {
+        AppError::new(
+            ErrorKind::Access,
+            format!(
+                "cannot read browser profile directory {}: {error}; fix its OS permissions, then retry",
+                root.display()
+            ),
+        )
+    })?;
+    for entry in entries {
+        let entry = entry.map_err(|error| {
+            AppError::new(
+                ErrorKind::Access,
+                format!(
+                    "cannot read an entry in {}: {error}; fix its OS permissions, then retry",
+                    root.display()
+                ),
+            )
+        })?;
         let path = entry.path();
         if path.is_dir() {
-            find_database_profiles(&path, filename, browser, depth - 1, found);
+            find_database_profiles(&path, filename, browser, depth - 1, found)?;
         }
     }
+    Ok(())
 }
 
 fn profile_name(path: &Path) -> String {
@@ -590,6 +809,7 @@ fn copy_snapshot(source: &Path) -> Result<Snapshot, AppError> {
             format!("cannot create private temporary workspace: {e}"),
         )
     })?;
+    set_private_directory(&directory)?;
     let filename = source
         .file_name()
         .ok_or_else(|| AppError::new(ErrorKind::Access, "database path has no filename"))?;
@@ -1126,10 +1346,49 @@ mod tests {
                 fs::create_dir_all(file.parent().unwrap()).unwrap();
                 File::create(file).unwrap();
             }
-            let found = discover_profiles(&home, platform);
+            let found = discover_profiles(&home, platform).unwrap();
             assert_eq!(found.len(), 2);
             assert!(found.iter().any(|p| p.browser == Browser::Firefox));
             assert!(found.iter().any(|p| p.browser == Browser::Chrome));
         }
+    }
+
+    #[test]
+    fn claim_copy_safety() {
+        let temp = TempDir::new().unwrap();
+        let source = temp.path().join("History");
+        let connection = Connection::open(&source).unwrap();
+        connection
+            .pragma_update(None, "journal_mode", "WAL")
+            .unwrap();
+        connection
+            .execute_batch(
+                "CREATE TABLE urls (id INTEGER PRIMARY KEY, url TEXT, title TEXT, visit_count INTEGER);
+                 CREATE TABLE visits (id INTEGER PRIMARY KEY, url INTEGER, visit_time INTEGER);
+                 INSERT INTO urls VALUES (1, 'https://copy.example/', 'Copy test', 1);
+                 INSERT INTO visits VALUES (1, 1, 13344473600000000);",
+            )
+            .unwrap();
+        let before = fs::read(&source).unwrap();
+        let snapshot = copy_snapshot(&source).unwrap();
+        assert!(snapshot.database.is_file());
+        assert!(snapshot.database.with_file_name("History-wal").is_file());
+        assert_eq!(fs::read(&source).unwrap(), before);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::PermissionsExt;
+            assert_eq!(
+                fs::metadata(&snapshot.directory)
+                    .unwrap()
+                    .permissions()
+                    .mode()
+                    & 0o777,
+                0o700
+            );
+        }
+        let snapshot_directory = snapshot.directory.clone();
+        drop(snapshot);
+        assert!(!snapshot_directory.exists());
+        drop(connection);
     }
 }

@@ -1,18 +1,17 @@
 # History Export Sentinel CLI
 
-An offline, copy-first Firefox and Chromium history exporter with normalized
-JSON/CSV output and SHA-256 verification reports.
+A local Firefox and Chromium history exporter. It copies each database before
+reading it and writes JSON, CSV, and a verification report.
 
 ```sh
-cargo install history-export-sentinel
+cargo install --git https://github.com/B-Divyesh/sf-browser-history-export-sentinel history-export-sentinel
+sentinel demo
 sentinel scan
 sentinel export --output ./history-archive --format both
 sentinel verify ./history-archive
 ```
 
-Empty history, permission failures, unsupported schemas, and verification
-mismatches return distinct non-zero exit codes. The CLI has no telemetry or
-network client and never opens a live profile database through SQLite.
+Empty history, permission errors, unsupported database formats, and changed
+exports return specific error codes. The CLI has no telemetry or network client.
 
-Full documentation and the exit-code contract are available in the project
-repository.
+See the [full commands and error codes](https://github.com/B-Divyesh/sf-browser-history-export-sentinel#use-the-cli).
