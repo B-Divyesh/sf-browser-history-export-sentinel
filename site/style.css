@@ -156,6 +156,7 @@ footer p { margin: 0; color: var(--muted); font-size: 13px; }
 .legal-main h1 { font-size: clamp(2.8rem, 8vw, 5.5rem); }
 .legal-main h2 { margin-top: 56px; font-size: 1.7rem; letter-spacing: -.025em; }
 .legal-main p, .legal-main li { max-width: 68ch; }
+.legal-main a { display: inline-flex; min-height: 44px; align-items: center; vertical-align: middle; }
 .legal-main .effective { display: inline-block; margin: 28px 0 24px; padding: 6px 10px; background: var(--acid); border: var(--border); font-weight: 900; }
 
 @keyframes panel-in { from { opacity: .6; transform: translateY(8px); } to { opacity: 1; transform: none; } }

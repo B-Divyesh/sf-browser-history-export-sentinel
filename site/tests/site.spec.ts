@@ -96,9 +96,14 @@ test("@claim:offline-reload precaches and reloads the demo offline", async ({ pa
   await context.setOffline(true);
   await page.reload();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Try a verified history export");
+  await expect(page.locator("#terminal-output")).toContainText("DEMO EXPORT VERIFIED");
+  await context.setOffline(false);
+});
+
+test("offline event reveals a plain status message", async ({ page }) => {
+  await page.goto("/demo/");
   await page.evaluate(() => window.dispatchEvent(new Event("offline")));
   await expect(page.locator("#offline-banner")).toBeVisible();
-  await context.setOffline(false);
 });
 
 test("mobile layout has no overflow and every visible control is at least 44px", async ({ page }, testInfo) => {

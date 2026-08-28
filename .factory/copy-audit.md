@@ -8,7 +8,7 @@ No sentence exceeds 22 words. No banned marketing word appears.
 | Words | Sentence |
 | ---: | --- |
 | 9 | Offline mode. The guide and sample-data demo remain available. |
-| 11 | Demo — sample data, nothing is saved to your browser history. |
+| 7 | Demo — sample data, nothing is saved. |
 | 12 | For people archiving Firefox or Chromium history before changing a computer or account. |
 | 9 | See a finished export and its verification report. |
 | 3 | Copy the database. |
