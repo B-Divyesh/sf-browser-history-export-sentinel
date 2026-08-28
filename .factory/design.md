@@ -63,7 +63,8 @@ scrolling are disabled and states switch with an opacity cross-fade under 80ms.
 
 ## Original asset plan and provenance
 
-- `site/public/evidence-desk.webp`: a generated editorial still-life showing a
+- `site/public/evidence-desk-e6b1edca.webp`: a content-fingerprinted 1200×630
+  crop of the generated editorial still-life showing a
   local browser database becoming JSON/CSV evidence sheets through a physical
   verifier gate. No browser logos, UI text, people, clouds, or realistic history
   content. It supports the product's data-flow explanation instead of acting as
@@ -79,3 +80,6 @@ scrolling are disabled and states switch with an opacity cross-fade under 80ms.
   `/opt/fleet/lib/gen-image.sh`, 1536×1024 PNG source. Converted locally to WebP.
   The sidecar records the exact prompt and deployment. Product artwork is
   project-original and distributed under the repository MIT license.
+- `site/public/og-history-sentinel.webp` and `apple-touch-icon.png` are local
+  crops of that same original asset. ImageMagick 6 produced both derivatives;
+  they add no third-party source material.

@@ -1,0 +1,114 @@
+[
+  {
+    "id": "demo-isolation",
+    "claim": "sentinel demo uses bundled Firefox and Chromium data without reading an installed profile, then removes its temporary input",
+    "where": "README Try the sample; CLI demo output",
+    "test": "npm run test:claims -- --grep @claim:demo-isolation",
+    "sandbox": "fresh temporary HOME and TMPDIR containing a real-data marker; assert marker stability, sample counts, and temporary input cleanup"
+  },
+  {
+    "id": "demo-sandbox",
+    "claim": "The web demo stores only its selected sample state in a demo-prefixed namespace and Reset demo clears it",
+    "where": "landing primary action; /demo banner; privacy policy",
+    "test": "npm run test:site -- --project=chromium --grep @claim:demo-sandbox",
+    "sandbox": "fresh browser context; enter from first-screen action, change/reset state, leave demo, and inspect localStorage"
+  },
+  {
+    "id": "end-to-end-export",
+    "claim": "Sentinel exports Firefox and Chromium visits to JSON and CSV with counts, date ranges, and SHA-256 hashes in per-profile reports",
+    "where": "landing first screen, process, report, footer; README introduction and usage; CLI README",
+    "test": "npm run test:claims -- --grep @claim:end-to-end-export",
+    "sandbox": "bundled demo in a fresh temporary directory; parse every report and recompute every exported-file digest"
+  },
+  {
+    "id": "sample-domains",
+    "claim": "The sample-data demo uses reserved .example domains",
+    "where": "landing demo; /demo sample description",
+    "test": "npm run test:claims -- --grep @claim:sample-domains",
+    "sandbox": "parse every URL in both bundled demo JSON exports and require a .example hostname"
+  },
+  {
+    "id": "history-fields-only",
+    "claim": "Sentinel exports history fields and does not archive pages, passwords, cookies, or encrypted browser data",
+    "where": "landing boundaries; README; privacy policy",
+    "test": "npm run test:claims -- --grep @claim:history-fields-only",
+    "sandbox": "parse every demo record and require the exact six-field history schema"
+  },
+  {
+    "id": "copy-safety",
+    "claim": "Sentinel copies the database and present SQLite side files into a private temporary folder before SQLite reads it, then removes the copy",
+    "where": "landing process; README; privacy policy",
+    "test": "npm run test:claims -- --grep @claim:copy-safety",
+    "sandbox": "active WAL database; assert source bytes, copied side file, 0700 workspace permissions, and cleanup"
+  },
+  {
+    "id": "verification",
+    "claim": "Verification detects a changed exported file and returns code 13 with that file's path",
+    "where": "landing process and report; README verify command and error codes; terms",
+    "test": "npm run test:claims -- --grep @claim:verification",
+    "sandbox": "fresh demo export; replace one JSON file, run verify, and assert status and named path"
+  },
+  {
+    "id": "profile-discovery",
+    "claim": "Sentinel finds Firefox and Chromium-family profiles in standard Windows, macOS, and Linux layouts",
+    "where": "landing facts and process; README usage",
+    "test": "npm run test:claims -- --grep @claim:profile-discovery",
+    "sandbox": "temporary fixture homes for all three operating-system layouts"
+  },
+  {
+    "id": "actionable-errors",
+    "claim": "Empty history, unsupported database formats, and permission failures stop with specific codes and no partial export",
+    "where": "landing demo and boundaries; README error codes; CLI README",
+    "test": "npm run test:claims -- --grep @claim:actionable-errors",
+    "sandbox": "empty and malformed databases plus an unreadable discovery root executed as an unprivileged user"
+  },
+  {
+    "id": "cli-privacy",
+    "claim": "The CLI has no account, network client, telemetry, advertising, or analytics and works without network access",
+    "where": "landing privacy rail; README privacy; privacy policy; CLI README",
+    "test": "npm run test:claims -- --grep @claim:cli-privacy",
+    "sandbox": "inspect runtime source and dependency tree for network/telemetry paths, then complete the demo with an isolated HOME"
+  },
+  {
+    "id": "no-overwrite",
+    "claim": "Sentinel refuses an existing output folder without changing its contents",
+    "where": "README usage",
+    "test": "npm run test:claims -- --grep @claim:no-overwrite",
+    "sandbox": "complete a demo, add a marker, rerun against the same output, and assert code 1 and marker stability"
+  },
+  {
+    "id": "json-mode",
+    "claim": "--json returns machine-readable command results without changing exported files",
+    "where": "README usage",
+    "test": "npm run test:claims -- --grep @claim:json-mode",
+    "sandbox": "parse demo and verify stdout as JSON against one unchanged demo export"
+  },
+  {
+    "id": "license-version-package",
+    "claim": "History Export Sentinel is free MIT-licensed version 0.1.0 source and its crate includes the license and changelog",
+    "where": "landing facts and install; README install and license; terms",
+    "test": "npm run test:claims -- --grep @claim:license-version-package",
+    "sandbox": "inspect Cargo metadata and list a locally packaged crate"
+  },
+  {
+    "id": "site-build",
+    "claim": "npm run build writes the complete static site to dist/site",
+    "where": "README development",
+    "test": "npm run build && npm run test:claims -- --grep @claim:site-build",
+    "sandbox": "clean build; assert all routes and service worker exist and deployment config is excluded from precache"
+  },
+  {
+    "id": "site-privacy",
+    "claim": "The site sets no cookies and loads no analytics, tracking pixels, third-party fonts, or third-party scripts",
+    "where": "README privacy; privacy policy",
+    "test": "npm run test:site -- --project=chromium --grep @claim:site-privacy",
+    "sandbox": "fresh browser context across home, demo, legal, and first-party 404 routes; record all requests and cookies"
+  },
+  {
+    "id": "offline-reload",
+    "claim": "The service worker caches public pages so the sample-data demo reloads offline after one visit",
+    "where": "README privacy; privacy policy; offline banner",
+    "test": "npm run test:site -- --project=chromium --grep @claim:offline-reload",
+    "sandbox": "fresh browser context; await service worker control, disable network, reload /demo, and assert content"
+  }
+]

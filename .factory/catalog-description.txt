@@ -1,0 +1,1 @@
+Export and verify Firefox and Chromium history before changing a computer or account.
