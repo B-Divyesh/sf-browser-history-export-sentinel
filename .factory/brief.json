@@ -1,0 +1,12 @@
+{
+  "slug": "browser-history-export-sentinel",
+  "title": "History Export Sentinel",
+  "territory": "utilities",
+  "user": "People archiving or moving their browser history who need a cross-platform export they can verify is complete before an account or machine changes.",
+  "smallest_useful_product": "A local CLI that detects installed Chromium/Firefox profiles, copies databases safely, exports normalized JSON/CSV, and reports record/date ranges, locked-profile errors, and hashes.",
+  "success_measure": "On fixture sets for Firefox and Chromium, the tool either exports expected count/date ranges or emits a non-zero actionable failure; no silent empty export.",
+  "artifact_class": "cli",
+  "monetization": "free",
+  "constraints": "Read copies only, never touch live browser databases; clearly handle profile encryption and OS permissions; history is highly sensitive and must never leave the device.",
+  "state": "RESEARCHED"
+}
