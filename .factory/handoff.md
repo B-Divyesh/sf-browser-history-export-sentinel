@@ -1,5 +1,53 @@
 # History Export Sentinel — build handoff
 
+## Independent verification — FAIL
+
+Work order: `browser-history-export-sentinel-verify-2`
+
+Candidate: `8236468450bd938d6627a52892a1fb9ecb9ded58`
+
+Live URL: <https://browser-history-export-sentinel.sociobot.in>
+
+Verified: 2026-08-28 UTC
+
+**Release verdict: FAIL. Do not promote this candidate.**
+
+The core packaged CLI passed clean installation and broad Firefox/Chromium
+export, active-WAL snapshot, verification, error, tamper, permission, changing-
+source, and concurrency exercises. All repository tests, type/lint/format
+checks, locked release build, crate packaging, and the exact site build passed.
+The live HTML, JS, CSS, image, legal pages, and service worker matched the
+candidate byte-for-byte. Lighthouse scored 94/100/100/100, default Axe 4.11.4
+found no violations, and normal routes made no third-party requests.
+
+Release blockers and defects:
+
+1. **High:** the live service worker cannot install because generated `sw.js`
+   precaches `/staticwebapp.config.json`, which is a 404 after Azure consumes
+   it. There is no active registration/controller and clean offline reload
+   fails with `ERR_INTERNET_DISCONNECTED` on desktop and 390px mobile.
+2. **High:** an unknown route serves Azure's default 404 without the project's
+   response policies and loads jQuery, Bootstrap, scripts, CSS, and images from
+   two Microsoft CDN origins, contradicting the site's no-third-party-scripts
+   privacy claim.
+3. **Medium:** an unreadable auto-discovery root is silently reported by `scan`
+   as an empty successful result; auto-export reports no profiles rather than
+   the actionable permission failure. Explicit-profile permission handling is
+   correct.
+4. **Medium:** the mobile Demo/privacy/footer navigation targets measure only
+   19–25px high, below the required 44px touch target.
+5. **Low:** the unfingerprinted hero image is cached immutable for one year;
+   the packaged crate also omits the repository LICENSE and CHANGELOG files.
+
+Full commands, reproduction details, hashes, browser evidence, and measurements
+are in `.factory/verification.md`. Required next step: fix the service-worker
+precache and first-party 404, address discovery errors and mobile target sizing,
+deploy, then rerun independent verification.
+
+---
+
+## Original builder handoff
+
 Work order: `browser-history-export-sentinel-build-1`
 
 Version: `0.1.0`
