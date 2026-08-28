@@ -593,43 +593,58 @@ fn copy_snapshot(source: &Path) -> Result<Snapshot, AppError> {
     let filename = source
         .file_name()
         .ok_or_else(|| AppError::new(ErrorKind::Access, "database path has no filename"))?;
-    let database = directory.join(filename);
-
-    let copy_result = (|| {
-        stable_copy(source, &database)?;
-        for suffix in ["-wal", "-shm"] {
-            let sidecar = PathBuf::from(format!("{}{}", source.display(), suffix));
-            if sidecar.exists() {
-                let target = PathBuf::from(format!("{}{}", database.display(), suffix));
-                stable_copy(&sidecar, &target)?;
+    for attempt in 1..=3 {
+        let sources_before = snapshot_signature(source)?;
+        let attempt_directory = directory.join(format!("attempt-{attempt}"));
+        fs::create_dir(&attempt_directory).map_err(|e| {
+            AppError::new(
+                ErrorKind::Access,
+                format!("cannot prepare temporary snapshot: {e}"),
+            )
+        })?;
+        for (path, _, _) in &sources_before {
+            let target = attempt_directory.join(path.file_name().ok_or_else(|| {
+                AppError::new(ErrorKind::Access, "database path has no filename")
+            })?);
+            if let Err(error) = fs::copy(path, target).map_err(|e| access_copy_error(path, e)) {
+                let _ = fs::remove_dir_all(&directory);
+                return Err(error);
             }
         }
-        Ok(())
-    })();
-    if let Err(error) = copy_result {
-        let _ = fs::remove_dir_all(&directory);
-        return Err(error);
+        let sources_after = snapshot_signature(source)?;
+        if sources_before == sources_after {
+            return Ok(Snapshot {
+                directory,
+                database: attempt_directory.join(filename),
+            });
+        }
+        let _ = fs::remove_dir_all(&attempt_directory);
     }
-    Ok(Snapshot {
-        directory,
-        database,
-    })
+    let _ = fs::remove_dir_all(&directory);
+    Err(AppError::new(
+        ErrorKind::Access,
+        format!(
+            "{} kept changing while its database set was copied; close the browser and retry",
+            source.display()
+        ),
+    ))
 }
 
-fn stable_copy(source: &Path, target: &Path) -> Result<(), AppError> {
-    let before = fs::metadata(source).map_err(|e| access_copy_error(source, e))?;
-    fs::copy(source, target).map_err(|e| access_copy_error(source, e))?;
-    let after = fs::metadata(source).map_err(|e| access_copy_error(source, e))?;
-    if before.len() != after.len() || before.modified().ok() != after.modified().ok() {
-        return Err(AppError::new(
-            ErrorKind::Access,
-            format!(
-                "{} changed while it was copied; close the browser and retry",
-                source.display()
-            ),
-        ));
+fn snapshot_signature(source: &Path) -> Result<Vec<(PathBuf, u64, Option<SystemTime>)>, AppError> {
+    let mut files = vec![source.to_path_buf()];
+    for suffix in ["-wal", "-shm"] {
+        let sidecar = PathBuf::from(format!("{}{}", source.display(), suffix));
+        if sidecar.exists() {
+            files.push(sidecar);
+        }
     }
-    Ok(())
+    files
+        .into_iter()
+        .map(|path| {
+            let metadata = fs::metadata(&path).map_err(|e| access_copy_error(&path, e))?;
+            Ok((path, metadata.len(), metadata.modified().ok()))
+        })
+        .collect()
 }
 
 fn access_copy_error(path: &Path, error: io::Error) -> AppError {
