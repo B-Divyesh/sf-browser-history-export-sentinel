@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f3ecdd" />
+    <meta name="description" content="Privacy policy for History Export Sentinel." />
+    <title>Privacy — History Export Sentinel</title>
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="../style.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to main content</a>
+    <header class="site-header">
+      <a class="wordmark" href="/" aria-label="History Export Sentinel home"><span aria-hidden="true">H//S</span><span>History Export<br />Sentinel</span></a>
+      <nav aria-label="Primary navigation"><a href="/">Home</a><a class="nav-install" href="/#install">Install <span aria-hidden="true">↓</span></a></nav>
+    </header>
+    <main class="legal-main" id="main">
+      <p class="eyebrow">Plain-language policy</p>
+      <h1>Privacy</h1>
+      <p class="effective">Effective 28 August 2026</p>
+      <p>History Export Sentinel is designed so your browser history does not need to leave your computer. The command-line tool has no network client, account system, telemetry, advertising, or analytics.</p>
+      <h2>What the CLI reads</h2>
+      <p>When you run an export, Sentinel copies the selected browser history SQLite database and its present sidecars to a temporary local directory. It reads the copy to export URLs, page titles, visit timestamps, and visit counts. The temporary copy is deleted when the command finishes.</p>
+      <h2>What it writes</h2>
+      <p>Sentinel writes JSON and/or CSV history records and a verification report only to the output directory you choose. The report uses a profile label and database filename, not the absolute source path. These files are sensitive; protect or delete them as you would the original history.</p>
+      <h2>This website</h2>
+      <p>This static documentation site sets no cookies and uses no analytics, tracking pixels, third-party fonts, or third-party scripts. A service worker caches the public site files on your device for offline reading. Clear the site data in your browser to remove that cache.</p>
+      <h2>Contact and changes</h2>
+      <p>Questions and proposed changes can be filed in the public project repository. Material policy changes will be dated on this page. Because the software is local and anonymous, we cannot identify or retrieve your exports.</p>
+    </main>
+    <footer><div class="wordmark footer-mark"><span aria-hidden="true">H//S</span><span>History Export<br />Sentinel</span></div><p>Portability without guesswork.</p><nav aria-label="Legal links"><a href="/privacy/" aria-current="page">Privacy</a><a href="/terms/">Terms</a><a href="/">Home</a></nav></footer>
+  </body>
+</html>

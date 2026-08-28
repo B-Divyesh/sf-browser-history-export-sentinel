@@ -1,0 +1,26 @@
+{
+  "name": "browser-history-export-sentinel",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --config site/vite.config.ts",
+    "build": "npm run build:site",
+    "build:site": "vite build --config site/vite.config.ts && node scripts/build-service-worker.mjs",
+    "preview": "vite preview --config site/vite.config.ts --host 127.0.0.1",
+    "test": "npm run test:cli && npm run build:site && npm run test:site",
+    "test:cli": "cargo test --workspace && cargo clippy --workspace --all-targets -- -D warnings",
+    "test:site": "playwright test",
+    "check": "tsc --noEmit -p site/tsconfig.json"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.10.2",
+    "@playwright/test": "1.58.2",
+    "@types/node": "24.3.0",
+    "typescript": "5.9.2",
+    "vite": "7.3.6"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

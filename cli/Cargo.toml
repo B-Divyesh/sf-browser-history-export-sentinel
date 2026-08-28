@@ -5,7 +5,7 @@ edition.workspace = true
 license.workspace = true
 repository.workspace = true
 description = "Copy-first, verifiable Firefox and Chromium history exports"
-readme = "../README.md"
+readme = "README.md"
 keywords = ["browser", "history", "export", "firefox", "chromium"]
 categories = ["command-line-utilities"]
 
