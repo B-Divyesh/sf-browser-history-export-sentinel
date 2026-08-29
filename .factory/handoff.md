@@ -109,3 +109,15 @@ cargo package --manifest-path cli/Cargo.toml --locked
 No review finding or product defect remains open. Signed release binaries are
 not published; the UI and README state this plainly, and publishing is reserved
 for the factory registry/release process.
+
+## Review 2 handoff — 2026-08-29 UTC
+
+This reviewer made no product-code changes. The live cold mobile/desktop review,
+request log, offline reload, route/link/focus checks, clean-clone 16-claim loop,
+`npm test`, and `npm run check` were run. The detailed result is
+`./review-2.md`.
+
+The review verdict is **FAIL**. Outstanding work is limited to the report’s
+findings: make Reset demo’s persistence match its claim, add/remove the three
+unlisted public claims, and replace the unexplained `report.json / format 1`
+label. The prior statement that no finding remains is superseded by this review.
