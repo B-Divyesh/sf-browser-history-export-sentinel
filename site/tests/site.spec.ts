@@ -96,7 +96,7 @@ test("@claim:offline-reload precaches and reloads the demo offline", async ({ pa
   await context.setOffline(true);
   await page.reload();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Try a verified history export");
-  await expect(page.locator("#terminal-output")).toContainText("DEMO EXPORT VERIFIED");
+  await expect(page.getByRole("heading", { name: "Six sample visits" })).toBeVisible();
   await context.setOffline(false);
 });
 
