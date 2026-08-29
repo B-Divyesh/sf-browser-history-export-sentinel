@@ -79,14 +79,27 @@ function clearDemoStorage(): void {
   } catch { /* Nothing else is required to leave demo mode. */ }
 }
 
+function applyQueryDemoMetadata(): void {
+  const title = "Demo — History Export Sentinel";
+  const description = "Try History Export Sentinel with isolated Firefox and Chromium sample data.";
+  document.title = title;
+  document.querySelector<HTMLMetaElement>("meta[name='description']")?.setAttribute("content", description);
+  document.querySelector<HTMLLinkElement>("link[rel='canonical']")?.setAttribute("href", "https://browser-history-export-sentinel.sociobot.in/demo/");
+  document.querySelector<HTMLMetaElement>("meta[property='og:title']")?.setAttribute("content", title);
+  document.querySelector<HTMLMetaElement>("meta[property='og:description']")?.setAttribute("content", description);
+  document.querySelector<HTMLMetaElement>("meta[name='twitter:title']")?.setAttribute("content", title);
+  document.querySelector<HTMLMetaElement>("meta[name='twitter:description']")?.setAttribute("content", description);
+}
+
 function initializePage(): void {
   const demoMode = inDemoMode();
   const demoBanner = document.querySelector<HTMLElement>("#demo-banner");
   if (demoBanner) demoBanner.hidden = !demoMode;
+  if (!demoMode) clearDemoStorage();
   if (demoMode) {
     writeDemoState(readDemoState());
     if (new URLSearchParams(location.search).get("demo") === "1") {
-      document.title = "Demo — History Export Sentinel";
+      applyQueryDemoMetadata();
       requestAnimationFrame(() => document.querySelector("#sample")?.scrollIntoView());
     }
   }
@@ -98,7 +111,7 @@ function initializePage(): void {
   const resultLabel = document.querySelector<HTMLElement>("#result-label");
   const resultAction = document.querySelector<HTMLElement>("#result-action");
 
-  const activateTab = (tab: HTMLButtonElement, focus = false): void => {
+  const activateTab = (tab: HTMLButtonElement, focus = false, persist = true): void => {
     const state = tab.dataset.state as DemoState;
     tabs.forEach((candidate) => {
       const selected = candidate === tab;
@@ -113,7 +126,7 @@ function initializePage(): void {
       result.className = `terminal-result result-${state}`;
       panel.dataset.state = state;
     }
-    writeDemoState(state);
+    if (persist) writeDemoState(state);
     if (focus) tab.focus();
   };
 
@@ -137,7 +150,7 @@ function initializePage(): void {
     button.addEventListener("click", () => {
       clearDemoStorage();
       const verified = tabs.find((tab) => tab.dataset.state === "verified");
-      if (verified) activateTab(verified, true);
+      if (verified) activateTab(verified, true, false);
     });
   });
   document.querySelectorAll<HTMLElement>("[data-start-real]").forEach((link) => link.addEventListener("click", clearDemoStorage));
@@ -162,7 +175,8 @@ function initializePage(): void {
 
 async function loadRoute(url: URL, addHistory: boolean): Promise<void> {
   if (addHistory) history.replaceState({ scrollY: window.scrollY }, "");
-  const response = await fetch(`${url.pathname}${url.search}`, { headers: { Accept: "text/html" } });
+  const queryDemo = url.searchParams.get("demo") === "1";
+  const response = await fetch(queryDemo ? "/demo/" : `${url.pathname}${url.search}`, { headers: { Accept: "text/html" } });
   const html = await response.text();
   const next = new DOMParser().parseFromString(html, "text/html");
   if (!next.querySelector("main h1")) throw new Error("Route has no page heading");
@@ -198,6 +212,10 @@ window.addEventListener("popstate", () => {
 window.addEventListener("online", () => { const banner = document.querySelector<HTMLElement>("#offline-banner"); if (banner) banner.hidden = true; });
 window.addEventListener("offline", () => { const banner = document.querySelector<HTMLElement>("#offline-banner"); if (banner) banner.hidden = false; });
 
-initializePage();
+if (new URLSearchParams(location.search).get("demo") === "1" && !document.body.hasAttribute("data-demo-page")) {
+  loadRoute(new URL(location.href), false).catch(initializePage);
+} else {
+  initializePage();
+}
 
 if ("serviceWorker" in navigator) window.addEventListener("load", () => navigator.serviceWorker.register("/sw.js"));

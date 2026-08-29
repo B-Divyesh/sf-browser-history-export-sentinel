@@ -9,7 +9,7 @@
   {
     "id": "demo-sandbox",
     "claim": "The web demo stores only its selected sample state in a demo-prefixed namespace and Reset demo clears it",
-    "where": "landing primary action; /demo banner; privacy policy",
+    "where": "landing first-screen action; /demo banner; README local browser preview; privacy policy",
     "test": "npm run test:site -- --project=chromium --grep @claim:demo-sandbox",
     "sandbox": "fresh browser context; enter from first-screen action, change/reset state, leave demo, and inspect localStorage"
   },

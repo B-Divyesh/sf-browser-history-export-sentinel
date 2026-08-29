@@ -18,14 +18,12 @@ then prints the output folder.
 cargo run --manifest-path cli/Cargo.toml -- demo
 ```
 
-The same sample is available at
-<https://browser-history-export-sentinel.sociobot.in/demo/>. See
-[`.factory/demo.md`](.factory/demo.md) for its isolation rules.
+After building and previewing the site, open `/?demo=1` to enter the sample-data
+demo directly. See [`.factory/demo.md`](.factory/demo.md) for its isolation rules.
 
 ## Install from source
 
-Signed release binaries are not available yet. Install with a current stable
-Rust toolchain:
+Install with a current stable Rust toolchain:
 
 ```sh
 cargo install --path cli
@@ -72,7 +70,7 @@ JSON records use this format:
 ```
 
 `--json` makes command results readable by scripts. It does not change the
-exported files. The CLI never prompts and has no network or telemetry code.
+exported files. The CLI has no network or telemetry code.
 
 ### Error codes
 
@@ -101,15 +99,12 @@ npm run build
 cargo package --manifest-path cli/Cargo.toml --locked
 ```
 
-`npm test` runs the Rust tests, claim tests, site build, and browser tests.
 `npm run build` writes the static site to `dist/site/`.
 
-## Deployment and privacy
+## Privacy
 
-The static documentation is deployed at
-<https://browser-history-export-sentinel.sociobot.in>. The site has no
-analytics, cookies, third-party scripts, or remote fonts. The service worker
-caches its public pages for offline reading.
+The site has no analytics, cookies, third-party scripts, or remote fonts. The
+service worker caches its public pages for offline reading.
 
 Read the [privacy policy](https://browser-history-export-sentinel.sociobot.in/privacy/)
 and [terms](https://browser-history-export-sentinel.sociobot.in/terms/).

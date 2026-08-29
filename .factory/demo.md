@@ -10,7 +10,8 @@ The demo shows three states from the CLI contract: verified, empty history, and
 blocked profile. Its six visits use reserved `.example` domains. Browser state
 uses only `localStorage["demo:sentinel:state"]`; no non-demo key is read or
 written. **Reset demo** clears every `demo:` key and restores the verified
-state. **Start for real** clears demo state and opens the source install step.
+state in memory. **Start for real** clears demo state and opens the source
+install step. Opening any non-demo page also clears the demo namespace.
 
 ## CLI
 
