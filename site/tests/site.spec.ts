@@ -146,10 +146,19 @@ test("@claim:site-privacy all routes stay same-origin and set no cookies", async
 });
 
 test("@claim:offline-reload precaches and reloads the demo offline", async ({ page, context }) => {
-  await page.goto("/demo/");
+  await page.goto("/?demo=1");
   await page.evaluate(async () => { await navigator.serviceWorker.ready; });
   await page.reload();
   await expect.poll(() => page.evaluate(() => Boolean(navigator.serviceWorker.controller))).toBe(true);
+  const cached = await page.evaluate(async () => {
+    const script = document.querySelector<HTMLScriptElement>("script[type='module']")?.src ?? "";
+    const responses = await Promise.all(["/", "/demo/", script].map(async (url) => {
+      const response = await caches.match(url);
+      return response ? (await response.arrayBuffer()).byteLength : 0;
+    }));
+    return responses;
+  });
+  expect(cached.every((bytes) => bytes > 0), `empty cache entries: ${cached.join(",")}`).toBe(true);
   await context.setOffline(true);
   await page.reload();
   await expect(page.getByRole("heading", { level: 1 })).toHaveText("Try a verified history export");

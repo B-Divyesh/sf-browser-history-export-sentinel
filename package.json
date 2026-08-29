@@ -12,6 +12,7 @@
     "test:cli": "cargo test --workspace && cargo clippy --workspace --all-targets -- -D warnings",
     "test:claims": "cargo build --manifest-path cli/Cargo.toml && node scripts/claim-tests.mjs",
     "test:site": "playwright test",
+    "audit:live": "node scripts/live-audit.mjs",
     "check": "tsc --noEmit -p site/tsconfig.json"
   },
   "devDependencies": {
