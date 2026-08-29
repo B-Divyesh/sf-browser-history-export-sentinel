@@ -15,10 +15,6 @@
       }
     }
   ],
-  "navigationFallback": {
-    "rewrite": "/404.html",
-    "exclude": ["/assets/*", "/*.{css,js,json,png,svg,webp,xml,txt}"]
-  },
   "responseOverrides": {
     "404": { "rewrite": "/404.html" }
   },
