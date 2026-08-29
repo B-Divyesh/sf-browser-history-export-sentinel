@@ -1,0 +1,90 @@
+{
+  "base": "https://browser-history-export-sentinel.sociobot.in",
+  "checkedAt": "2026-08-29T01:42:32.597Z",
+  "routes": {
+    "desktop:/": {
+      "status": 200,
+      "title": "History Export Sentinel — verify browser history exports",
+      "heading": "Export and verify browser history",
+      "seriousAxeViolations": 0
+    },
+    "desktop:/demo/": {
+      "status": 200,
+      "title": "Demo — History Export Sentinel",
+      "heading": "Try a verified history export",
+      "seriousAxeViolations": 0
+    },
+    "desktop:/privacy/": {
+      "status": 200,
+      "title": "Privacy — History Export Sentinel",
+      "heading": "Privacy",
+      "seriousAxeViolations": 0
+    },
+    "desktop:/terms/": {
+      "status": 200,
+      "title": "Terms — History Export Sentinel",
+      "heading": "Terms",
+      "seriousAxeViolations": 0
+    },
+    "mobile:/": {
+      "status": 200,
+      "title": "History Export Sentinel — verify browser history exports",
+      "heading": "Export and verify browser history",
+      "seriousAxeViolations": 0
+    },
+    "mobile:/demo/": {
+      "status": 200,
+      "title": "Demo — History Export Sentinel",
+      "heading": "Try a verified history export",
+      "seriousAxeViolations": 0
+    },
+    "mobile:/privacy/": {
+      "status": 200,
+      "title": "Privacy — History Export Sentinel",
+      "heading": "Privacy",
+      "seriousAxeViolations": 0
+    },
+    "mobile:/terms/": {
+      "status": 200,
+      "title": "Terms — History Export Sentinel",
+      "heading": "Terms",
+      "seriousAxeViolations": 0
+    }
+  },
+  "requests": [
+    "https://browser-history-export-sentinel.sociobot.in/",
+    "https://browser-history-export-sentinel.sociobot.in/assets/main-C3X6yXJd.js",
+    "https://browser-history-export-sentinel.sociobot.in/assets/main-CrYAs4ts.css",
+    "https://browser-history-export-sentinel.sociobot.in/evidence-desk-e6b1edca.webp",
+    "https://browser-history-export-sentinel.sociobot.in/demo/",
+    "https://browser-history-export-sentinel.sociobot.in/assets/main-C3X6yXJd.js",
+    "https://browser-history-export-sentinel.sociobot.in/assets/main-CrYAs4ts.css",
+    "https://browser-history-export-sentinel.sociobot.in/privacy/",
+    "https://browser-history-export-sentinel.sociobot.in/assets/main-C3X6yXJd.js",
+    "https://browser-history-export-sentinel.sociobot.in/assets/main-CrYAs4ts.css",
+    "https://browser-history-export-sentinel.sociobot.in/terms/",
+    "https://browser-history-export-sentinel.sociobot.in/assets/main-C3X6yXJd.js",
+    "https://browser-history-export-sentinel.sociobot.in/assets/main-CrYAs4ts.css",
+    "https://browser-history-export-sentinel.sociobot.in/",
+    "https://browser-history-export-sentinel.sociobot.in/assets/main-C3X6yXJd.js",
+    "https://browser-history-export-sentinel.sociobot.in/assets/main-CrYAs4ts.css",
+    "https://browser-history-export-sentinel.sociobot.in/evidence-desk-e6b1edca.webp",
+    "https://browser-history-export-sentinel.sociobot.in/demo/",
+    "https://browser-history-export-sentinel.sociobot.in/assets/main-C3X6yXJd.js",
+    "https://browser-history-export-sentinel.sociobot.in/assets/main-CrYAs4ts.css",
+    "https://browser-history-export-sentinel.sociobot.in/privacy/",
+    "https://browser-history-export-sentinel.sociobot.in/assets/main-C3X6yXJd.js",
+    "https://browser-history-export-sentinel.sociobot.in/assets/main-CrYAs4ts.css",
+    "https://browser-history-export-sentinel.sociobot.in/terms/",
+    "https://browser-history-export-sentinel.sociobot.in/assets/main-C3X6yXJd.js",
+    "https://browser-history-export-sentinel.sociobot.in/assets/main-CrYAs4ts.css"
+  ],
+  "checks": [
+    "desktop first screen action and three facts fit at 1440x900",
+    "query demo, reset, exit, and real-key isolation passed",
+    "History API title, focus, announcement, and Back behavior passed",
+    "query demo reloads offline with sample content",
+    "designed same-origin 404 keeps status and security headers",
+    "all observed product requests stayed same-origin"
+  ]
+}

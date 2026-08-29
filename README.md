@@ -100,6 +100,7 @@ cargo package --manifest-path cli/Cargo.toml --locked
 ```
 
 `npm run build` writes the static site to `dist/site/`.
+Deploy the contents of `dist/site/` as the static site root.
 
 ## Privacy
 

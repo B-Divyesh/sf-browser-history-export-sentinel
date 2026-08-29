@@ -91,6 +91,7 @@ real, and the three demo state controls name their result or state.
 | 9 | Install stable Rust, Node.js 20 or newer, and npm. |
 | 2 | Then run. |
 | 9 | `npm run build` writes the static site to `dist/site/`. |
+| 10 | Deploy the contents of `dist/site/` as the static site root. |
 | 11 | The site has no analytics, cookies, third-party scripts, or remote fonts. |
 | 10 | The service worker caches its public pages for offline reading. |
 | 6 | Read the privacy policy and terms. |
